@@ -7,7 +7,7 @@ import { AppService } from './app.service';
 
 @Module({
   imports: [
-    ConfigModule,
+    ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: path.resolve('public'),
     }),
