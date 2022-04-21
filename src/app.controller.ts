@@ -7,6 +7,6 @@ export class AppController {
 
   @Post('sessions/:id/messages')
   send(@Param('id') id: string, @Body() message: any) {
-    this.appService.sendMessage(id, message);
+    return this.appService.sendMessage(id, message);
   }
 }

@@ -1,11 +1,10 @@
-import { Logger } from '@nestjs/common';
 import {
   ConnectedSocket,
   MessageBody,
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
-import { Server, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import { AppService } from './app.service';
 
 @WebSocketGateway({
@@ -14,20 +13,10 @@ import { AppService } from './app.service';
   },
 })
 export class AppGateway {
-  private readonly logger = new Logger('AppGateway');
-
   constructor(private readonly appService: AppService) {}
 
-  afterInit(server: Server) {
-    this.logger.log('Init');
-  }
-
   handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
-  }
-
-  handleConnection(client: Socket, ...args: any[]) {
-    this.logger.log(`Client connected: ${client.id}`);
+    this.appService.handleDisconnect(client);
   }
 
   @SubscribeMessage('session_request')
@@ -35,7 +24,7 @@ export class AppGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
   ) {
-    this.appService.handleConnect(client, message);
+    this.appService.handleConnection(client, message);
   }
 
   @SubscribeMessage('user_uttered')

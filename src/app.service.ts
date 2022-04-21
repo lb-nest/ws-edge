@@ -10,13 +10,21 @@ export class AppService {
   private readonly clients: Record<string, Socket> = {};
 
   constructor(consigService: ConfigService) {
-    this.messagingUrl = consigService.get<string>('MESAGING_URL');
+    this.messagingUrl = consigService.get<string>('MESSAGING_URL');
   }
 
-  async handleConnect(client: Socket, message: any) {
+  async handleConnection(client: Socket, message: any) {
     const sessionId = message.session_id ?? uuid.v4();
     this.clients[sessionId] = client;
     client.emit('session_confirm', sessionId);
+  }
+
+  async handleDisconnect(client: Socket) {
+    const [key] = Object.entries(this.clients).find(
+      ([, socket]) => socket.id === client.id,
+    );
+
+    delete this.clients[key];
   }
 
   async handleMessage(client: Socket, message: any) {
@@ -30,12 +38,15 @@ export class AppService {
     } catch {}
   }
 
-  async sendMessage(clientId: string, message: any) {
-    const client = this.clients[clientId];
+  async sendMessage(sessionId: string, message: any) {
+    const client = this.clients[sessionId];
     if (client) {
-      client.emit('bot_uttered', message, () => {
-        console.log(1);
-      });
+      client.emit('bot_uttered', message);
     }
+
+    return {
+      message_id: uuid.v4(),
+      ...message,
+    };
   }
 }
