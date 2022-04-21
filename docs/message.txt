@@ -1,0 +1,14 @@
+text: "Sorry, I'm not sure I've understood you correctly 🤔 Do you mean...",
+quick_replies: [
+  {
+    content_type: 'text',
+    title: 'Yes',
+    payload: '/affirm{}',
+  },
+  {
+    content_type: 'text',
+    title: 'Something else',
+    payload: '/out_of_scope',
+  },
+],
+image: 'https://cdn.discordapp.com/attachments/531573912954208256/962001299212222544/EFAz3qHUEAA5kgM.jpg',
