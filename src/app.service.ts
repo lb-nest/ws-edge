@@ -13,13 +13,13 @@ export class AppService {
     this.messagingUrl = consigService.get<string>('MESSAGING_URL');
   }
 
-  async handleConnection(client: Socket, message: any) {
+  async handleSessionRequest(client: Socket, message: any): Promise<any> {
     const sessionId = message.session_id ?? uuid.v4();
     this.clients[sessionId] = client;
     client.emit('session_confirm', sessionId);
   }
 
-  async handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket): Promise<void> {
     const [key] = Object.entries(this.clients).find(
       ([, socket]) => socket.id === client.id,
     );
@@ -27,18 +27,17 @@ export class AppService {
     delete this.clients[key];
   }
 
-  async handleMessage(client: Socket, message: any) {
+  async handleMessage(client: Socket, message: any): Promise<void> {
     try {
+      const id = client.handshake.query.channelId;
       await axios.post(
-        this.messagingUrl.concat(
-          `/channels/${client.handshake.query.channelId}/webhook`,
-        ),
+        this.messagingUrl.concat(`/channels/${id}/webhook`),
         message,
       );
     } catch {}
   }
 
-  async sendMessage(sessionId: string, message: any) {
+  async sendMessage(sessionId: string, message: any): Promise<any> {
     const client = this.clients[sessionId];
     if (client) {
       client.emit('bot_uttered', message);

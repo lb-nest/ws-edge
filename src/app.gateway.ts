@@ -16,7 +16,7 @@ export class AppGateway {
   constructor(private readonly appService: AppService) {}
 
   handleDisconnect(client: Socket) {
-    this.appService.handleDisconnect(client);
+    return this.appService.handleDisconnect(client);
   }
 
   @SubscribeMessage('session_request')
@@ -24,7 +24,7 @@ export class AppGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
   ) {
-    this.appService.handleConnection(client, message);
+    return this.appService.handleSessionRequest(client, message);
   }
 
   @SubscribeMessage('user_uttered')
@@ -32,6 +32,6 @@ export class AppGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
   ) {
-    this.appService.handleMessage(client, message);
+    return this.appService.handleMessage(client, message);
   }
 }
