@@ -1,51 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
+import { EventEmitter } from 'events';
+import { nanoid } from 'nanoid';
 import { Socket } from 'socket.io';
-import * as uuid from 'uuid';
 
 @Injectable()
 export class AppService {
-  private readonly messagingUrl: string;
-  private readonly clients: Record<string, Socket> = {};
+  private readonly emitter = new EventEmitter();
+  private readonly socket = new WeakMap<Socket, (...args: any[]) => Socket>();
+
+  private readonly axios: AxiosInstance;
 
   constructor(consigService: ConfigService) {
-    this.messagingUrl = consigService.get<string>('MESSAGING_URL');
+    this.axios = axios.create({
+      baseURL: consigService.get<string>('MESSAGING_URL'),
+    });
   }
 
-  async handleSessionRequest(client: Socket, message: any): Promise<any> {
-    const sessionId = message.session_id ?? uuid.v4();
-    this.clients[sessionId] = client;
-    client.emit('session_confirm', sessionId);
+  handleConnection(socket: Socket): void {
+    this.socket.set(socket, socket.send.bind(socket));
   }
 
-  async handleDisconnect(client: Socket): Promise<void> {
-    const [key] = Object.entries(this.clients).find(
-      ([, socket]) => socket.id === client.id,
-    );
-
-    delete this.clients[key];
+  handleDisconnect(socket: Socket): void {
+    this.socket.delete(socket);
   }
 
-  async handleMessage(client: Socket, message: any): Promise<void> {
-    try {
-      const id = client.handshake.query.channelId;
-      await axios.post(
-        this.messagingUrl.concat(`/channels/${id}/webhook`),
-        message,
-      );
-    } catch {}
+  handleSessionRequest(socket: Socket, message: any): any {
+    const sessionId = message.session_id ?? nanoid();
+    this.emitter.on(sessionId, this.socket.get(socket));
+    socket.emit('session_confirm', sessionId);
   }
 
-  async sendMessage(sessionId: string, message: any): Promise<any> {
-    const client = this.clients[sessionId];
-    if (client) {
-      client.emit('bot_uttered', message);
-    }
-
+  sendMessage(sessionId: string, message: any): any {
+    this.emitter.emit(sessionId, 'bot_uttered', message);
     return {
-      message_id: uuid.v4(),
+      message_id: nanoid(),
       ...message,
     };
+  }
+
+  handleMessage(socket: Socket, message: any): void {
+    const id = socket.handshake.query.channelId;
+    this.axios.post(`/channels/${id}/webhook`, message).catch(() => undefined);
   }
 }

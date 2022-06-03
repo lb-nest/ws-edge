@@ -15,8 +15,12 @@ import { AppService } from './app.service';
 export class AppGateway {
   constructor(private readonly appService: AppService) {}
 
-  handleDisconnect(client: Socket) {
-    return this.appService.handleDisconnect(client);
+  handleConnection(socket: Socket) {
+    return this.appService.handleConnection(socket);
+  }
+
+  handleDisconnect(socket: Socket) {
+    return this.appService.handleDisconnect(socket);
   }
 
   @SubscribeMessage('session_request')
