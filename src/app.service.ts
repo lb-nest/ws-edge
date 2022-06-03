@@ -8,7 +8,7 @@ import { Socket } from 'socket.io';
 @Injectable()
 export class AppService {
   private readonly emitter = new EventEmitter();
-  private readonly socket = new WeakMap<Socket, (...args: any[]) => Socket>();
+  private readonly socket = new WeakMap<Socket, [string, Socket['emit']]>();
 
   private readonly axios: AxiosInstance;
 
@@ -19,16 +19,20 @@ export class AppService {
   }
 
   handleConnection(socket: Socket): void {
-    this.socket.set(socket, socket.send.bind(socket));
+    // this.socket.set(socket, ['', socket.emit.bind(socket)]);
   }
 
   handleDisconnect(socket: Socket): void {
+    this.emitter.off(...this.socket.get(socket));
     this.socket.delete(socket);
   }
 
   handleSessionRequest(socket: Socket, message: any): any {
     const sessionId = message.session_id ?? nanoid();
-    this.emitter.on(sessionId, this.socket.get(socket));
+
+    this.socket.set(socket, [sessionId, socket.emit.bind(socket)]);
+    this.emitter.on(...this.socket.get(socket));
+
     socket.emit('session_confirm', sessionId);
   }
 
