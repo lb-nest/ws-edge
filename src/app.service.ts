@@ -16,6 +16,8 @@ export class AppService {
     this.axios = axios.create({
       baseURL: consigService.get<string>('MESSAGING_URL'),
     });
+
+    this.emitter.setMaxListeners(Infinity);
   }
 
   handleConnection(socket: Socket): void {
