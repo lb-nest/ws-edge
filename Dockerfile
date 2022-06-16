@@ -1,9 +1,8 @@
-FROM node:alpine AS builder
+FROM node:18-alpine AS builder
 
 WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
-COPY prisma ./prisma/
 
 RUN yarn
 
@@ -11,7 +10,7 @@ COPY . .
 
 RUN yarn build
 
-FROM node:alpine as production
+FROM node:18-alpine as production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
@@ -19,7 +18,6 @@ ENV NODE_ENV=${NODE_ENV}
 WORKDIR /usr/src/app
 
 COPY package.json yarn.lock ./
-COPY prisma ./prisma/
 
 RUN yarn --prod
 
