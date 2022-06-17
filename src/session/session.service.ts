@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 import { Socket } from 'socket.io';
 
 @Injectable()
-export class AppService {
+export class SessionService {
   private readonly emitter = new EventEmitter();
   private readonly socket = new WeakMap<Socket, [string, Socket['emit']]>();
 

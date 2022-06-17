@@ -5,22 +5,22 @@ import {
   WebSocketGateway,
 } from '@nestjs/websockets';
 import { Socket } from 'socket.io';
-import { AppService } from './app.service';
+import { SessionService } from './session.service';
 
 @WebSocketGateway({
   cors: {
     origin: '*',
   },
 })
-export class AppGateway {
-  constructor(private readonly appService: AppService) {}
+export class SessionGateway {
+  constructor(private readonly sessionService: SessionService) {}
 
   handleConnection(socket: Socket) {
-    return this.appService.handleConnection(socket);
+    return this.sessionService.handleConnection(socket);
   }
 
   handleDisconnect(socket: Socket) {
-    return this.appService.handleDisconnect(socket);
+    return this.sessionService.handleDisconnect(socket);
   }
 
   @SubscribeMessage('session_request')
@@ -28,7 +28,7 @@ export class AppGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
   ) {
-    return this.appService.handleSessionRequest(client, message);
+    return this.sessionService.handleSessionRequest(client, message);
   }
 
   @SubscribeMessage('user_uttered')
@@ -36,6 +36,6 @@ export class AppGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
   ) {
-    return this.appService.handleMessage(client, message);
+    return this.sessionService.handleMessage(client, message);
   }
 }
