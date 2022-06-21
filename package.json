@@ -29,6 +29,7 @@
     "@nestjs/platform-socket.io": "^8.4.7",
     "@nestjs/websockets": "^8.4.7",
     "axios": "^0.26.1",
+    "joi": "^17.6.0",
     "nanoid": "^3.3.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
