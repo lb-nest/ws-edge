@@ -3,5 +3,5 @@ services:
     build: .
     ports:
       - 3080:8080
-    env_file:
-      - .env
+    environment:
+      - MESSAGING_URL
