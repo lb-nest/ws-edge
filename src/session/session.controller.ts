@@ -9,8 +9,6 @@ export class SessionController {
   async send(@Param('id') id: string, @Body() message: any) {
     try {
       return await this.sessionService.sendMessage(id, message);
-    } catch (e) {
-      console.error(e);
-    }
+    } catch {}
   }
 }
