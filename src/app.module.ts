@@ -8,7 +8,6 @@ import { SessionModule } from './session/session.module';
     ConfigModule.forRoot({
       validationSchema: Joi.object({
         PORT: Joi.number().default(8080),
-        SECRET: Joi.string().required(),
         MESSAGING_URL: Joi.string().uri().required(),
       }),
     }),
