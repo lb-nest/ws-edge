@@ -4,6 +4,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
 } from '@nestjs/websockets';
+import { Observable } from 'rxjs';
 import { Socket } from 'socket.io';
 import { SessionService } from './session.service';
 
@@ -15,11 +16,11 @@ import { SessionService } from './session.service';
 export class SessionGateway {
   constructor(private readonly sessionService: SessionService) {}
 
-  handleConnection(socket: Socket) {
+  handleConnection(socket: Socket): void {
     return this.sessionService.handleConnection(socket);
   }
 
-  handleDisconnect(socket: Socket) {
+  handleDisconnect(socket: Socket): void {
     return this.sessionService.handleDisconnect(socket);
   }
 
@@ -27,7 +28,7 @@ export class SessionGateway {
   handleSessionRequest(
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
-  ) {
+  ): void {
     return this.sessionService.handleSessionRequest(client, message);
   }
 
@@ -35,7 +36,7 @@ export class SessionGateway {
   handleMessages(
     @ConnectedSocket() client: Socket,
     @MessageBody() message: any,
-  ) {
+  ): Observable<any> {
     return this.sessionService.handleMessage(client, message);
   }
 }

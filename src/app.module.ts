@@ -14,7 +14,5 @@ import { SessionModule } from './session/session.module';
     }),
     SessionModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
