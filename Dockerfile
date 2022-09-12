@@ -1,28 +1,25 @@
 FROM node:18-alpine AS builder
 
-WORKDIR /usr/src/app
-
-COPY package.json yarn.lock ./
-
-RUN yarn
-
-COPY . .
-
-RUN yarn build
-
-FROM node:18-alpine as production
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+ENV NODE_ENV build
 
 WORKDIR /usr/src/app
 
-COPY package.json yarn.lock ./
-
-RUN yarn --prod
+COPY package*.json ./
+RUN npm ci
 
 COPY . .
+RUN npm run build && npm prune --production
 
-COPY --from=builder /usr/src/app/dist ./dist
+# ---
+
+FROM node:18-alpine
+
+ENV NODE_ENV production
+
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/package*.json ./
+COPY --from=builder /usr/src/app/node_modules/ ./node_modules/
+COPY --from=builder /usr/src/app/dist/ ./dist/
 
 CMD ["node", "dist/main"]
