@@ -9,7 +9,7 @@ import { SessionModule } from './session/session.module';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        PORT: Joi.number().default(8080),
+        PORT: Joi.number().port().default(8080),
         MESSAGING_URL: Joi.string().uri().required(),
       }),
     }),

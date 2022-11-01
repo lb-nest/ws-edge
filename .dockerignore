@@ -1,9 +1,21 @@
-node_modules
+.github
+.git
+.gitignore
 
-test
+.husky
+
+Dockerfile
+.dockerignore
+
+/dist
+/node_modules
 
 .env
-.env.production
+
+.prettierrc
+
+*.md
+docs
 
 logs
 *.log
@@ -14,23 +26,15 @@ lerna-debug.log*
 
 .DS_Store
 
-coverage
-.nyc_output
+/coverage
+/.nyc_output
 
-.idea
+/.idea
 .project
 .classpath
-.c9
+.c9/
 *.launch
-.settings
+.settings/
 *.sublime-workspace
 
 .vscode
-
-.git
-.gitignore
-Dockerfile
-.dockerignore
-.prettierrc
-*.md
-docs
