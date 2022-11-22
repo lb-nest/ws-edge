@@ -33,8 +33,10 @@ export class SessionService {
   }
 
   handleMessage(socket: Socket, message: any): Observable<any> {
-    const id = socket.handshake.query.channelId;
-    return this.httpService.post(`/channels/${id}/webhook`, message);
+    return this.httpService.post(
+      `/channels/${socket.handshake.query.channelId}/webhook`,
+      message,
+    );
   }
 
   sendMessage(sessionId: string, message: any): any {
